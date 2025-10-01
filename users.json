@@ -10,32 +10,6 @@
         "password_hash": "$2b$12$zv9HQ7QSQ711Viz42DQG6OjVfKFM1UjKEKZArmyaPuKIM3N9Gs7hG",
         "avatar": "Athul_Athul.jpg",
         "bio": "helo i am athul"
-    },
-    {
-        "username": "bob",
-        "password_hash": "$2b$12$fKz4hWqZ9XUG8HoK6aTYieoFY.P0jRMCUqu3f3KXvZJQb0CQE1HDO"
-    },
-    {
-        "username": "Anusree",
-        "password_hash": "$2b$12$OxJp9ThhTxncWeNqGxDyOeMlLTr2goQp5ofn/mKQ3NHNVt/.FR/bu",
-        "avatar": "Anusree_WhatsApp_Image_2022-07-18_at_5.08.17_PM.jpeg"
-    },
-    {
-        "username": "Saranya",
-        "password_hash": "$2b$12$m7Qao0zaf4x2acoRW2ABAOluY3ihGgZptYIMB3i6.oqCBO4a/K.TS",
-        "bio": "",
-        "avatar": ""
-    },
-    {
-        "username": "cyber_security",
-        "password_hash": "$2b$12$fF4hwQcrfLoVz5D.rv2Fpehv16723oF85wALIiyzeH9ztX7EAntlK",
-        "bio": "",
-        "avatar": "cyber_security_hacker-laptop-hoodie-modern-malware-cyber-security-5k-5472x3648-1651.jpg"
-    },
-    {
-        "username": "roboticx",
-        "password_hash": "$2b$12$a4IaWLDw3PvY1oCrBqQhFeGlG9MTbU0s03RsJiaWnJyRmjKGhSahW",
-        "bio": "",
-        "avatar": ""
     }
+
 ]
