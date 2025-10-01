@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            background: linear-gradient(135deg, #56ab2f, #a8e063);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #ffffffdd;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #56ab2f;
+            box-shadow: 0 0 5px #8bc34a99;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #3498db;
+            font-size: 18px;
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .back-link {
+            margin-top: 15px;
+            display: block;
+            text-decoration: none;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #1e8449;
+        }
+
+        p.error {
+            color: red;
+            margin-top: 15px;
+        }
+
+        p.success {
+            color: green;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        <h2>Create Account</h2>
+
+        <label>Username:</label>
+        <input type="text" name="username" required>
+
+        <label>Password:</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Request Account</button>
+
+        <a class="back-link" href="{{ url_for('login') }}">Back to Login</a>
+
+        {% if error %}
+          <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if success %}
+          <p class="success">{{ success }}</p>
+        {% endif %}
+    </form>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat Room</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #c9ffbf, #ffafbd);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-top: 30px;
+            font-size: 36px;
+        }
+
+        #messages {
+            background-color: #ffffffcc;
+            width: 60%;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        #messages p {
+            background: #f1f1f1;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            text-align: left;
+            max-width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        input[type="text"] {
+            width: 60%;
+            font-size: 18px;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            outline: none;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 20px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        footer {
+            margin-top: 40px;
+        }
+
+        footer button {
+            background-color: red;
+            margin-top: 20px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 50px;
+        }
+
+        /* User list */
+        .user-list {
+            width: 60%;
+            margin: 20px auto;
+            padding: 15px;
+            background: #ffffffcc;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 12px;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            font-size: 22px;
+            text-align: center;
+            line-height: 48px;
+            user-select: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .chat-link button {
+            background-color: #27ae60;
+            border-radius: 20px;
+            padding: 8px 15px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .chat-link button:hover {
+            background-color: #219150;
+        }
+        #avatar-form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Welcome, {{ username }} to Zerochat!</h1>
+        
+        <div id="messages"></div>
+
+        <div>
+            <input type="text" id="msg" placeholder="Type your message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+        <!-- Upload Avatar Form -->
+        <form id="avatar-form" enctype="multipart/form-data">
+            <label for="avatar">Upload your avatar:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+            <button type="submit">Upload</button>
+        </form>
+
+        <div class="user-list">
+            <h2>Users</h2>
+            {% for user in users %}
+            {% set u = get_user(user) %}
+            <div class="user-item">
+                {% if u and u.avatar %}
+                <img src="{{ url_for('uploaded_file', filename=u.avatar) }}" alt="Avatar" class="avatar">
+                {% else %}
+                <div class="avatar">{{ user[0]|upper }}</div>
+                {% endif %}
+                <div>{{ user }}</div>
+                <div class="chat-link" style="margin-left:auto;">
+                    <a href="{{ url_for('private_chat', recipient=user) }}">
+                        <button>Chat</button>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <footer>
+            <a href="{{ url_for('logout') }}">
+                <button>Logout</button>
+            </a>
+            <br> <br>
+            {% if 'username' in session %}
+    <a href="{{ url_for('profile', username=session['username']) }}"><button>My profile</button></a>
+{% endif %}
+
+<br> <br>
+
+{% if 'username' in session and session['username'] == username %}
+    <a href="{{ url_for('edit_profile') }}"> <button>Edit Profile </button></a>
+{% endif %}
+
+        </footer>
+    </center>
+
+<script>
+    const messagesDiv = document.getElementById('messages');
+
+    async function fetchMessages() {
+        const res = await fetch('/messages');
+        const msgs = await res.json();
+        messagesDiv.innerHTML = '';
+        for (const msg of msgs) {
+            const p = document.createElement('p');
+            p.textContent = msg.user + ': ' + msg.text;
+            messagesDiv.appendChild(p);
+        }
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const msgInput = document.getElementById('msg');
+        const text = msgInput.value.trim();
+        if (!text) return;
+        await fetch('/messages', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text})
+        });
+        msgInput.value = '';
+        fetchMessages();
+    }
+
+    document.getElementById('avatar-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fileInput = document.getElementById('avatar');
+        const formData = new FormData();
+        formData.append('avatar', fileInput.files[0]);
+        const res = await fetch('/upload_avatar', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.status === 'ok') {
+            alert('Avatar uploaded successfully. Reload the page to see changes.');
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    });
+
+    setInterval(fetchMessages, 3000);
+    fetchMessages();
+</script>
+</body>
+</html>

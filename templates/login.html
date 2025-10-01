@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            background: linear-gradient(135deg, #a8e063, #56ab2f);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #ffffffdd;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #34495e;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #56ab2f;
+            box-shadow: 0 0 5px #8bc34a99;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #f1c40f;
+            font-size: 18px;
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #f39c12;
+        }
+
+        p {
+            color: red;
+            margin-top: 15px;
+        }
+
+        .register-link {
+            margin-top: 15px;
+            display: block;
+            text-decoration: none;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .register-link:hover {
+            color: #1e8449;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        <h2>Login to Zerochat</h2>
+
+        <label>Username:</label>
+        <input type="text" name="username" required>
+
+        <label>Password:</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Login</button>
+
+        <a class="register-link" href="{{ url_for('register') }}">Create an Account</a>
+
+        {% if error %}
+          <p>{{ error }}</p>
+        {% endif %}
+    </form>
+</body>
+</html>

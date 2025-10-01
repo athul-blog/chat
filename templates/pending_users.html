@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pending Users - ZeroChat Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 500px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .username {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .actions button {
+            padding: 8px 15px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.1s ease;
+        }
+        .approve {
+            background: #2ecc71;
+            color: white;
+        }
+        .reject {
+            background: #e74c3c;
+            color: white;
+        }
+        .approve:hover { background: #27ae60; }
+        .reject:hover { background: #c0392b; }
+        .actions button:active { transform: scale(0.95); }
+        .empty {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h2>Pending User Approvals</h2>
+
+    <div id="user-list">
+        {% if pending %}
+            {% for user in pending %}
+                <div class="card" id="user-{{ user.username }}">
+                    <span class="username">{{ user.username }}</span>
+                    <div class="actions">
+                        <button class="approve" onclick="approveUser('{{ user.username }}')">Approve</button>
+                        <button class="reject" onclick="rejectUser('{{ user.username }}')">Reject</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">No pending users 🎉</div>
+        {% endif %}
+    </div>
+
+    <script>
+        function approveUser(username) {
+            fetch('/admin/approve_user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'username=' + encodeURIComponent(username)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'approved') {
+                    document.getElementById('user-' + username).remove();
+                    checkEmpty();
+                } else {
+                    alert(data.error || 'Error approving user');
+                }
+            });
+        }
+
+        function rejectUser(username) {
+            fetch('/admin/reject_user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'username=' + encodeURIComponent(username)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'rejected') {
+                    document.getElementById('user-' + username).remove();
+                    checkEmpty();
+                } else {
+                    alert(data.error || 'Error rejecting user');
+                }
+            });
+        }
+
+        function checkEmpty() {
+            if (document.querySelectorAll('.card').length === 0) {
+                document.getElementById('user-list').innerHTML = '<div class="empty">No pending users 🎉</div>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <h2>User Access Log</h2>
+    {% if user_log %}
+        <ul>
+            {% for user, logs in user_log.items() %}
+                <li><strong>{{ user }}</strong>
+                    <ul>
+                        {% for entry in logs %}
+                            <li>IP: {{ entry.ip }} | Time: {{ entry.timestamp }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No user activity logged yet.</p>
+    {% endif %}
+
+    <h2>Send Alert to User</h2>
+    <form method="POST" action="{{ url_for('send_alert') }}">
+        <label>Username:</label>
+        <input type="text" name="username" required><br><br>
+        <label>Alert Message:</label>
+        <input type="text" name="message" required><br><br>
+        <button type="submit">Send Alert</button>
+    </form>
+
+    <br>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ user.username }}'s Profile - ZeroChat</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            color: #2c3e50;
+        }
+        .profile-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 500px;
+            margin: auto;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #2c3e50;
+        }
+        h2 {
+            margin: 15px 0 5px;
+        }
+        p.bio {
+            font-style: italic;
+            color: #555;
+        }
+        .chat-history {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .msg {
+            background: #ecf0f1;
+            padding: 8px;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        .private {
+            background: #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        {% if user.avatar %}
+            <img src="{{ url_for('uploaded_file', filename=user.avatar) }}" alt="Avatar">
+        {% else %}
+            <img src="https://via.placeholder.com/120" alt="No Avatar">
+        {% endif %}
+
+        <h2>{{ user.username }}</h2>
+        <p class="bio">{{ user.bio or "No bio yet" }}</p>
+
+        <div class="chat-history">
+            <h3>Public Messages</h3>
+            {% if public_msgs %}
+                {% for msg in public_msgs %}
+                    <div class="msg">{{ msg.text }}</div>
+                {% endfor %}
+            {% else %}
+                <p>No public messages yet.</p>
+            {% endif %}
+
+           </div>
+    </div>
+</body>
+</html>

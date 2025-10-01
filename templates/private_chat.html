@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Private Chat with {{ recipient }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f7f9fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+        }
+
+        h1 {
+            margin: 30px 0 10px 0;
+            font-size: 30px;
+            color: #2c3e50;
+        }
+
+        #messages {
+            width: 60%;
+            max-height: 400px;
+            overflow-y: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        #messages p {
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 10px 0;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        #messages p.self {
+            background: #27ae60;
+            color: white;
+            margin-left: auto;
+        }
+
+        #messages p.other {
+            background: #ecf0f1;
+            color: #333;
+            margin-right: auto;
+        }
+
+        input[type="text"] {
+            width: 60%;
+            font-size: 18px;
+            padding: 12px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin-left: 10px;
+            font-size: 16px;
+            border-radius: 20px;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #container {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Chat with {{ recipient }}</h1>
+        <div id="messages"></div>
+        <div>
+            <input type="text" id="msg" placeholder="Type your message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <a href="{{ url_for('home') }}">&larr; Back to chat room</a>
+    </div>
+
+<script>
+    const messagesDiv = document.getElementById('messages');
+    const username = "{{ username }}";
+    const recipient = "{{ recipient }}";
+
+    async function fetchMessages() {
+        const res = await fetch(`/private_messages/${recipient}`);
+        const msgs = await res.json();
+        messagesDiv.innerHTML = '';
+        for (const msg of msgs) {
+            const p = document.createElement('p');
+            p.textContent = msg.user + ': ' + msg.text;
+            p.classList.add(msg.user === username ? 'self' : 'other');
+            messagesDiv.appendChild(p);
+        }
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const msgInput = document.getElementById('msg');
+        const text = msgInput.value.trim();
+        if (!text) return;
+        await fetch(`/private_messages/${recipient}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text})
+        });
+        msgInput.value = '';
+        fetchMessages();
+    }
+
+    setInterval(fetchMessages, 3000);
+    fetchMessages();
+</script>
+</body>
+</html>
