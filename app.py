@@ -9,22 +9,26 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # CHANGE THIS in production (use env var)
 bcrypt = Bcrypt(app)
 
-# In-memory message stores (not persisted)
-messages = []  # list of {'user': username, 'text': text}
-private_messages = {}  # { (user1, user2): [ { 'user': sender, 'text': text }, ... ] }
-
-# File upload config
+# Configs
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+MASTER_CHAT_FILE = 'master.json'
+MAX_MESSAGES = 500  # Limit chat history
+
+# Create upload folder if needed
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Persisted data files
+# File paths
 USERS_FILE = 'users.json'
 PENDING_FILE = 'pending_users.json'
 USER_UI_FILE = 'user_ui.json'
 ENTRY_LOGS_FILE = 'entry_logs.json'
+
+# In-memory stores
+messages = []
+private_messages = {}
 
 # ---------------- Helpers ----------------
 def allowed_file(filename):
@@ -48,18 +52,23 @@ def save_json_file(path, data):
 def log_entry(username, ip):
     logs = load_json_file(ENTRY_LOGS_FILE, [])
     timestamp = datetime.utcnow().isoformat()
-
-    logs.append({
-        'username': username,
-        'ip': ip,
-        'timestamp': timestamp
-    })
-
+    logs.append({'username': username, 'ip': ip, 'timestamp': timestamp})
     save_json_file(ENTRY_LOGS_FILE, logs)
 
 def count_entries_for_user(username):
     logs = load_json_file(ENTRY_LOGS_FILE, [])
     return sum(1 for entry in logs if entry.get('username') == username)
+
+# ------------- Public chat persistence -------------
+def load_public_messages():
+    global messages
+    messages = load_json_file(MASTER_CHAT_FILE, [])
+
+def save_public_messages():
+    save_json_file(MASTER_CHAT_FILE, messages)
+
+# Load public chat messages on startup
+load_public_messages()
 
 # ------------- Users helpers -------------
 def load_users():
@@ -168,6 +177,9 @@ def handle_messages():
         text = (data.get('text') or '').strip()
         if text:
             messages.append({'user': session['username'], 'text': text})
+            if len(messages) > MAX_MESSAGES:
+                messages[:] = messages[-MAX_MESSAGES:]
+            save_public_messages()
             return jsonify({'status': 'ok'}), 201
         return jsonify({'error': 'No text provided'}), 400
     return jsonify(messages)
@@ -345,9 +357,8 @@ def list_users():
 
 @app.route("/offline")
 def offline():
-    return render_template("offline.html")  # create this file in /templates
-
+    return render_template("offline.html")
 
 # ---------------- Run ------------------
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=80) 
+    app.run(host="0.0.0.0", port=80)
