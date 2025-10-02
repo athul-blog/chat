@@ -13,16 +13,6 @@ bcrypt = Bcrypt(app)
 messages = []  # list of {'user': username, 'text': text}
 private_messages = {}  # { (user1, user2): [ { 'user': sender, 'text': text }, ... ] }
 
-# creating favicon icon
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(
-        app.static_folder,
-        'favicon.ico',
-        mimetype='image/vnd.microsoft.icon'
-    )
-
-
 # File upload config
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -360,4 +350,5 @@ if __name__ == '__main__':
 
 #Talvibe : Talk better , Vibe deeper
 #Created by Athul vinod .M , published in 1-10-2025
+
 
